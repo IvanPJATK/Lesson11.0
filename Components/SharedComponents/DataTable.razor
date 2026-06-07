@@ -1,0 +1,25 @@
+﻿<h3>DataTable</h3>
+
+@typeparam TItem
+
+<table class="table table-hover table-striped border align-middle mt-2">
+    <thead class="table-dark">
+        <tr>
+            @TableHeader
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Items)
+        {
+            <tr>
+                @RowTemplate(item)
+            </tr>
+        }
+    </tbody>
+</table>
+
+@code {
+    [Parameter] public IReadOnlyList<TItem> Items { get; set; } = Array.Empty<TItem>();
+    [Parameter] public RenderFragment? TableHeader { get; set; }
+    [Parameter] public RenderFragment<TItem> RowTemplate { get; set; } = null!;
+}

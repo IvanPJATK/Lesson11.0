@@ -1,4 +1,5 @@
 ﻿@inherits LayoutComponentBase
+@inject BlazorLesson1.Services.StateContainer State
 
 <div class="page">
     <div class="sidebar">
@@ -6,18 +7,27 @@
     </div>
 
     <main>
-        <div class="top-row px-4">
-            <a href="https://learn.microsoft.com/aspnet/core/" target="_blank">About</a>
+        <div class="top-row px-4 bg-light shadow-sm d-flex justify-content-between align-items-center">
+            <span class="text-secondary fw-semibold">Academic Management Workspace</span>
+            <div class="badge bg-primary fs-6 p-2">
+                Observed Students: <span class="fw-bold">@State.ObservedStudents.Count</span>
+            </div>
         </div>
 
-        <article class="content px-4">
+        <div class="content px-4 py-3">
             @Body
-        </article>
+        </div>
     </main>
 </div>
 
-<div id="blazor-error-ui">
-    An unhandled error has occurred.
-    <a href="" class="reload">Reload</a>
-    <a class="dismiss">🗙</a>
-</div>
+@code {
+    protected override void OnInitialized()
+    {
+        State.OnChange += StateHasChanged;
+    }
+
+    public void Dispose()
+    {
+        State.OnChange -= StateHasChanged;
+    }
+}

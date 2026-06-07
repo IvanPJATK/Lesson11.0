@@ -1,0 +1,15 @@
+﻿<h3>ApiError</h3>
+
+@if (!string.IsNullOrEmpty(ErrorMessage))
+{
+    <div class="alert alert-danger d-flex align-items-center shadow-sm" role="alert">
+        <span class="bi bi-exclamation-triangle-fill flex-shrink-0 me-2"></span>
+        <div>
+            <strong>API Execution Exception:</strong> @ErrorMessage
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter] public string? ErrorMessage { get; set; }
+}

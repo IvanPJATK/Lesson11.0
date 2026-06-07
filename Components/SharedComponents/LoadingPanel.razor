@@ -1,0 +1,18 @@
+﻿<h3>LoadingPanel</h3>
+
+@if (IsLoading)
+{
+    <div class="d-flex align-items-center my-3">
+        <div class="spinner-border text-primary me-2" role="status"></div>
+        <span><strong>Loading database assets...</strong></span>
+    </div>
+}
+else
+{
+    @ChildContent
+}
+
+@code {
+    [Parameter] public bool IsLoading { get; set; }
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+}
