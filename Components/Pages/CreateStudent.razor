@@ -1,0 +1,57 @@
+﻿@page "/students/create"
+@inject BlazorLesson1.Services.StudentApiClient Api
+@inject NavigationManager Nav
+@using BlazorLesson1.DTOs
+
+<h3>Onboard New Student</h3>
+
+<div style="max-width: 400px; margin: 0 auto;">
+    <EditForm Model="@_model" OnValidSubmit="SaveProfile">
+        <DataAnnotationsValidator />
+
+        <div class="mb-2">
+            <label>Index Number:</label>
+            <InputText @bind-Value="_model.StudentNumber" class="form-control" />
+            <span style="color:red"><ValidationMessage For="(() => _model.StudentNumber)" /></span>
+        </div>
+
+        <div class="mb-2">
+            <label>First Name:</label>
+            <InputText @bind-Value="_model.FirstName" class="form-control" />
+            <span style="color:red"><ValidationMessage For="() => _model.FirstName" /></span>
+        </div>
+
+        <div class="mb-2">
+            <label>Last Name:</label>
+            <InputText @bind-Value="_model.LastName" class="form-control" />
+            <span style="color:red"><ValidationMessage For="() => _model.LastName" /></span>
+        </div>
+
+        <div class="mb-2">
+            <label>Email Address:</label>
+            <InputText @bind-Value="_model.Email" class="form-control" />
+            <span style="color:red"><ValidationMessage For="() => _model.Email" /></span>
+        </div>
+
+        <div class="mb-3">
+            <label>Semester (1 to 8):</label>
+            <InputNumber @bind-Value="_model.Semester" class="form-control" />
+            <span style="color:red"><ValidationMessage For="() => _model.Semester" /></span>
+        </div>
+
+        <button type="submit" class="btn btn-primary w-100">Save Profile</button>
+    </EditForm>
+</div>
+
+@code {
+    private StudentDto _model = new() { Semester = 1 };
+
+    private async Task SaveProfile()
+    {
+        var result = await Api.CreateStudentAsync(_model);
+        if (result != null)
+        {
+            Nav.NavigateTo($"/students/{result.Id}");
+        }
+    }
+}

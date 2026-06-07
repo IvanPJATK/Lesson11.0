@@ -1,0 +1,71 @@
+﻿@page "/students"
+@inject BlazorLesson1.Services.StudentApiClient Api
+@inject BlazorLesson1.Services.StateContainer State
+@using BlazorLesson1.DTOs
+
+<h3>Student Directory</h3>
+
+@if (_apiErrorMessage != null)
+{
+    <p style="color:red"><b>Error: @_apiErrorMessage</b></p>
+}
+
+@if (_isLoading)
+{
+    <p><i>Loading student directory records...</i></p>
+}
+else
+{
+    <table class="table border">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Index</th>
+                <th>Full Name</th>
+                <th>Email</th>
+                <th>Semester</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var student in _students)
+            {
+                <tr>
+                    <td>@student.Id</td>
+                    <td>@student.StudentNumber</td>
+                    <td>@student.FirstName @student.LastName</td>
+                    <td>@student.Email</td>
+                    <td>@student.Semester</td>
+                    <td>
+                        <a href="students/@student.Id" class="btn btn-sm btn-primary">Profile</a>
+                        <button class="btn btn-sm btn-warning" @onclick="() => State.ToggleObservation(student)">
+                            @(State.IsObserved(student.Id) ? "Unwatch" : "Watch")
+                        </button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private List<StudentDto> _students = new();
+    private bool _isLoading = true;
+    private string? _apiErrorMessage;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            _students = await Api.GetStudentsAsync();
+        }
+        catch (Exception ex)
+        {
+            _apiErrorMessage = ex.Message;
+        }
+        finally
+        {
+            _isLoading = false;
+        }
+    }
+}

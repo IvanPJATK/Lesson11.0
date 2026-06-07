@@ -1,0 +1,35 @@
+﻿@page "/observed"
+@inject BlazorLesson1.Services.StateContainer State
+
+<h3>Operational Watchlist</h3>
+
+@if (!State.ObservedStudents.Any())
+{
+    <p>No active profiles are currently being monitored.</p>
+}
+else
+{
+    <table class="table border">
+        <thead>
+            <tr>
+                <th>Index</th>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var student in State.ObservedStudents)
+            {
+                <tr>
+                    <td>@student.StudentNumber</td>
+                    <td>@student.FirstName @student.LastName</td>
+                    <td>@student.Email</td>
+                    <td>
+                        <button class="btn btn-sm btn-danger" @onclick="() => State.ToggleObservation(student)">Wipe</button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}

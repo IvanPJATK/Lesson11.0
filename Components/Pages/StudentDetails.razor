@@ -1,0 +1,86 @@
+﻿@page "/students/{id:int}"
+@inject BlazorLesson1.Services.StudentApiClient Api
+@inject IJSRuntime JS
+@using BlazorLesson1.DTOs
+
+<h3>Student Profile View</h3>
+
+@if (_isLoading)
+{
+    <p><i>Loading profile metrics...</i></p>
+}
+else if (_payload != null)
+{
+    <div style="border: 1px solid #ccc; padding: 15px; margin-bottom: 15px;">
+        <h4>Personal Details</h4>
+        <p>Name: @_payload.Student.FirstName @_payload.Student.LastName</p>
+        <p>Index: @_payload.Student.StudentNumber</p>
+        <p>Semester: @_payload.Student.Semester</p>
+        <p>
+            Email: @_payload.Student.Email
+            <button class="btn btn-sm btn-light border" @onclick="CopyEmail">Copy</button>
+        </p>
+    </div>
+
+    <h4>Assigned Courses Units</h4>
+    <ul>
+        @foreach (var course in _payload.Courses)
+        {
+            <li>@course.Name (@course.Ects Ects)</li>
+        }
+    </ul>
+
+    <hr />
+
+    <h4>Assign a Module</h4>
+    <EditForm Model="@_formModel" OnValidSubmit="HandleAssignment">
+        <div class="mb-3">
+            <select @bind="_formModel.CourseId" class="form-select">
+                <option value="0">-- Select Curriculum --</option>
+                @foreach (var c in _availableCourses)
+                {
+                    <option value="@c.Id">@c.Name</option>
+                }
+            </select>
+        </div>
+        <button type="submit" class="btn btn-success" disabled="@(_formModel.CourseId == 0)">Link Course</button>
+    </EditForm>
+}
+
+@code {
+    [Parameter] public int Id { get; set; }
+
+    private BlazorLesson1.Services.StudentApiClient.StudentDetailsPayload? _payload;
+    private List<CourseDto> _availableCourses = new();
+    private bool _isLoading = true;
+
+    private CourseForm _formModel = new();
+
+    protected override async Task OnParametersSetAsync()
+    {
+        _isLoading = true;
+        _payload = await Api.GetStudentDetailsAsync(Id);
+        _availableCourses = await Api.GetCoursesAsync();
+        _isLoading = false;
+    }
+
+    private async Task HandleAssignment()
+    {
+        var success = await Api.AssignCourseAsync(Id, _formModel.CourseId);
+        if (success)
+        {
+            _payload = await Api.GetStudentDetailsAsync(Id);
+            _formModel.CourseId = 0;
+        }
+    }
+
+    private async Task CopyEmail()
+    {
+        if (_payload != null)
+        {
+            await JS.InvokeVoidAsync("navigator.clipboard.writeText", _payload.Student.Email);
+        }
+    }
+
+    public class CourseForm { public int CourseId { get; set; } }
+}

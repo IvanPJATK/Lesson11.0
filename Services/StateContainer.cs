@@ -21,7 +21,7 @@ namespace BlazorLesson1.Services
             NotifyStateChanged();
         }
         public bool IsObserved(int studentId) => _observedStudents.Any(s => s.Id == studentId);
-        private void NotifyStateChnaged() => OnChange?.Invoke();
+        private void NotifyStateChanged() => OnChange?.Invoke();
 
     }
 }
